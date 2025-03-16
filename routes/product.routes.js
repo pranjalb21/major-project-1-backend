@@ -3,10 +3,14 @@ const Product = require("../models/product.models");
 const router = express.Router();
 
 router
-    .get("/", async (req, res) => {
+    // Get product by category type
+    .get("/category/:category", async (req, res) => {
         try {
-            console.log("hi");
-            const products = await Product.find();
+            const { category } = req.params;
+            const products =
+                category === "all"
+                    ? await Product.find()
+                    : await Product.find({ category: category });
             if (products) {
                 res.status(200).json({
                     message: "Products fetched successfully",
@@ -17,6 +21,24 @@ router
         } catch (error) {
             res.status(500).json({
                 message: "Failed to fetch products",
+                error,
+            });
+        }
+    })
+    .get("/id/:id", async (req, res) => {
+        try {
+            const { id } = req.params;
+            const product = await Product.findById(id);
+            if (product) {
+                res.status(200).json({
+                    message: "Product fetched successfully",
+                    data: product,
+                    totalCount: product.length,
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: "Failed to fetch product",
                 error,
             });
         }
