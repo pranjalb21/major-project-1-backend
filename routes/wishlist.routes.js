@@ -46,9 +46,12 @@ router
                 // Add the product into wishlist
                 const newWishlistProduct = await Wishlist.create({ productId });
                 if (newWishlistProduct) {
+                    const newWishlist = await Wishlist.findById(
+                        newWishlistProduct._id
+                    ).populate("productId");
                     res.status(201).json({
                         message: "Products added to wishlist.",
-                        data: newWishlistProduct,
+                        data: newWishlist,
                     });
                 } else {
                     res.status(400).json({

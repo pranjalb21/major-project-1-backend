@@ -24,17 +24,17 @@ router
     })
 
     // add or update product in the cart
-    .post("/add", async (req, res) => {
+    .post("/add/:productId", async (req, res) => {
         try {
-            let cartData = req.body;
+            let { productId } = req.params;
 
             // check if product id is provided in req body
-            if (!cartData.productId) {
+            if (!productId) {
                 res.status(400).json({ error: "Product ID is required." });
             }
 
             // fetch the product if exists or not
-            const id = new mongoose.Types.ObjectId(cartData.productId);
+            const id = new mongoose.Types.ObjectId(productId);
             const existingCart = await Cart.findOne({
                 productId: id,
             });
@@ -43,6 +43,7 @@ router
             if (existingCart) {
                 existingCart.productCount += 1;
                 const updatedCart = await existingCart.save();
+                await updatedCart.populate("productId");
                 res.status(200).json({
                     message: "Product updated in Cart.",
                     data: updatedCart,
@@ -51,10 +52,11 @@ router
             // if product doesn't exist in the cart then add the product in the cart
             else {
                 const cartToBeAdded = new Cart({
-                    ...cartData,
+                    productId,
                     productCount: 1,
                 });
                 const newCart = await cartToBeAdded.save();
+                await newCart.populate("productId");
                 res.status(201).json({
                     message: "Product added in Cart.",
                     data: newCart,
@@ -74,10 +76,55 @@ router
             const { productId } = req.params;
             const id = new mongoose.Types.ObjectId(productId);
             const existingProduct = await Cart.findOne({ productId: id });
-            if(existingProduct){
-                
+            if (existingProduct) {
+                if (existingProduct.productCount > 1) {
+                    existingProduct.productCount -= 1;
+                    await existingProduct.save();
+                    const updatedExistingProduct =
+                        await existingProduct.populate("productId");
+                    res.status(200).json({
+                        message: "Item removed.",
+                        data: updatedExistingProduct,
+                    });
+                } else {
+                    const deletedProduct = await existingProduct.deleteOne();
+                    res.status(200).json({
+                        message: "Product removed from cart.",
+                        data: deletedProduct,
+                    });
+                }
+            } else {
+                res.status(404).json({ error: "Product not added to cart." });
             }
-        } catch (error) {}
+        } catch (error) {
+            res.status(500).json({
+                message: "Failed to remove cart data.",
+                error,
+            });
+        }
+    })
+
+    // delete product from cart
+    .delete("/delete/:productId", async (req, res) => {
+        try {
+            const { productId } = req.params;
+            const id = new mongoose.Types.ObjectId(productId);
+            const existingProduct = await Cart.findOne({ productId: id });
+            if (existingProduct) {
+                const deletedProduct = await existingProduct.deleteOne();
+                res.status(200).json({
+                    message: "Product removed successfully.",
+                    data: deletedProduct,
+                });
+            } else {
+                res.status(404).json({ error: "Product not found." });
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: "Failed to delete cart data.",
+                error,
+            });
+        }
     });
 
 module.exports = router;
