@@ -23,6 +23,53 @@ router
         }
     })
 
+    // add or update product in the cart
+    .post("/add/:productId", async (req, res) => {
+        try {
+            let { productId } = req.params;
+
+            // check if product id is provided in req body
+            if (!productId) {
+                res.status(400).json({ error: "Product ID is required." });
+            }
+
+            // fetch the product if exists or not
+            const id = new mongoose.Types.ObjectId(productId);
+            const existingCart = await Cart.findOne({
+                productId: id,
+            });
+
+            // if product exists in the cart then update the product count
+            if (existingCart) {
+                existingCart.productCount += 1;
+                const updatedCart = await existingCart.save();
+                await updatedCart.populate("productId");
+                res.status(200).json({
+                    message: "Product updated in Cart.",
+                    data: updatedCart,
+                });
+            }
+            // if product doesn't exist in the cart then add the product in the cart
+            else {
+                const cartToBeAdded = new Cart({
+                    productId,
+                    productCount: 1,
+                });
+                const newCart = await cartToBeAdded.save();
+                await newCart.populate("productId");
+                res.status(201).json({
+                    message: "Product added in Cart.",
+                    data: newCart,
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: "Failed to add cart data.",
+                error,
+            });
+        }
+    })
+
     // add product with quantity in the cart
     .post("/addQuantity/:productId", async (req, res) => {
         try {
