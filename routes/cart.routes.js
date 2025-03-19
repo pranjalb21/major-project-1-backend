@@ -23,10 +23,11 @@ router
         }
     })
 
-    // add or update product in the cart
-    .post("/add/:productId", async (req, res) => {
+    // add product with quantity in the cart
+    .post("/addQuantity/:productId", async (req, res) => {
         try {
             let { productId } = req.params;
+            let { quantity } = req.body;
 
             // check if product id is provided in req body
             if (!productId) {
@@ -41,7 +42,7 @@ router
 
             // if product exists in the cart then update the product count
             if (existingCart) {
-                existingCart.productCount += 1;
+                existingCart.productCount += quantity;
                 const updatedCart = await existingCart.save();
                 await updatedCart.populate("productId");
                 res.status(200).json({
@@ -53,7 +54,7 @@ router
             else {
                 const cartToBeAdded = new Cart({
                     productId,
-                    productCount: 1,
+                    productCount: quantity,
                 });
                 const newCart = await cartToBeAdded.save();
                 await newCart.populate("productId");
