@@ -173,6 +173,22 @@ router
                 error,
             });
         }
+    })
+    .delete("/all", async (req, res) => {
+        try {
+            const emptyCart = await Cart.deleteMany();
+            if (emptyCart.deletedCount > 0) {
+                res.status(200).json({ message: "All cart items removed." });
+            } else {
+                res.status(400).json({
+                    error: "No items found to delete in the cart.",
+                });
+            }
+        } catch (error) {
+            res.status(400).json({
+                error: "Failed to delete all items in cart.",
+            });
+        }
     });
 
 module.exports = router;

@@ -7,6 +7,7 @@ const productRouter = require("./routes/product.routes");
 const cartRouter = require("./routes/cart.routes");
 const wishlistRouter = require("./routes/wishlist.routes");
 const addressRouter = require("./routes/address.routes");
+const orderRouter = require("./routes/order.routes");
 
 const PORT = process.env.PORT;
 const app = express();
@@ -22,6 +23,7 @@ app.use("/products", productRouter);
 app.use("/cart", cartRouter);
 app.use("/wishlist", wishlistRouter);
 app.use("/address", addressRouter);
+app.use("/order", orderRouter);
 
 app.listen(PORT, async () => {
     await initializeDB();
