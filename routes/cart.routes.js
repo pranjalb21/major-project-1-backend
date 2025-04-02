@@ -7,12 +7,17 @@ router
     // fetch all products from cart
     .get("/all", async (req, res) => {
         try {
-            const cartData = await Cart.find().populate("productId");
+            const { page = 1 } = req.query;
+            const cartData = await Cart.find()
+                .populate("productId")
+                .skip((page - 1) * process.env.ITEMSPERPAGE)
+                .limit(process.env.ITEMSPERPAGE);
+            const totalCount = await Cart.countDocuments();
             if (cartData) {
                 res.status(200).json({
                     message: "Cart data fetched successfully.",
                     data: cartData,
-                    totalCount: cartData.length,
+                    totalCount,
                 });
             }
         } catch (error) {

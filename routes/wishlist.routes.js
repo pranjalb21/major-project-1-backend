@@ -7,12 +7,17 @@ router
     // fetch all products from wishlist
     .get("/all", async (req, res) => {
         try {
-            const wishlistData = await Wishlist.find().populate("productId");
+            const { page = 1 } = req.query;
+            const wishlistData = await Wishlist.find()
+                .populate("productId")
+                .skip((page - 1) * process.env.ITEMSPERPAGE)
+                .limit(process.env.ITEMSPERPAGE);
+            const totalCount = await Wishlist.find().countDocuments();
             if (wishlistData) {
                 res.status(200).json({
                     message: "Wishlist data fetched successfully.",
                     data: wishlistData,
-                    totalCount: wishlistData.length,
+                    totalCount,
                 });
             }
         } catch (error) {
