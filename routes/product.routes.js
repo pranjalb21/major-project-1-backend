@@ -11,8 +11,8 @@ router
                 category = "all",
                 rating,
                 sort,
-                range = 2500,
-                searchKeyword,
+                price = 2500,
+                searchText,
             } = req.query;
 
             // Build the query object
@@ -23,11 +23,11 @@ router
             if (rating) {
                 query.rating = { $gte: rating }; // Assuming you're filtering by minimum rating
             }
-            if (range) {
-                query.price = { $lte: range }; // Assuming `price` is the field you want to filter by
+            if (price) {
+                query.price = { $lte: price }; // Assuming `price` is the field you want to filter by
             }
-            if (searchKeyword) {
-                query.title = { $regex: searchKeyword, $options: "i" }; // Case-insensitive search
+            if (searchText) {
+                query.title = { $regex: searchText, $options: "i" }; // Case-insensitive search
             }
             // Perform the query
             let products = await Product.find(query)
