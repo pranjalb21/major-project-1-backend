@@ -9,7 +9,7 @@ const wishlistRouter = require("./routes/wishlist.routes");
 const addressRouter = require("./routes/address.routes");
 const orderRouter = require("./routes/order.routes");
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = express();
 const corsOptions = {
     origin: "*",
