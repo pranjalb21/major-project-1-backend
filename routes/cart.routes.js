@@ -8,10 +8,7 @@ router
     .get("/all", async (req, res) => {
         try {
             const { page = 1 } = req.query;
-            const cartData = await Cart.find()
-                .populate("productId")
-                .skip((page - 1) * process.env.ITEMSPERPAGE)
-                .limit(process.env.ITEMSPERPAGE);
+            const cartData = await Cart.find().populate("productId");
             const totalCount = await Cart.countDocuments();
             if (cartData) {
                 res.status(200).json({

@@ -8,10 +8,7 @@ router
     .get("/all", async (req, res) => {
         try {
             const { page = 1 } = req.query;
-            const wishlistData = await Wishlist.find()
-                .populate("productId")
-                .skip((page - 1) * process.env.ITEMSPERPAGE)
-                .limit(process.env.ITEMSPERPAGE);
+            const wishlistData = await Wishlist.find().populate("productId");
             const totalCount = await Wishlist.find().countDocuments();
             if (wishlistData) {
                 res.status(200).json({
