@@ -27,7 +27,7 @@ app.use("/order", orderRouter);
 
 app.get("/", (req, res) => res.status(200).json({ message: "Hi" }));
 
+initializeDB();
 app.listen(PORT, async () => {
-    await initializeDB();
     console.log(`Server running on port: ${PORT}`);
 });
