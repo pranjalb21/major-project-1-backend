@@ -1,10 +1,15 @@
 {
     "version": 2,
+    "builds": [
+        {
+            "src": "index.js",
+            "use": "@vercel/node"
+        }
+    ],
     "routes": [
-        { "src": "/wishlist/all", "dest": "/api/wishlist/all" },
-        { "src": "/cart/all", "dest": "/api/cart/all" },
-        { "src": "/products/all", "dest": "/api/products/all" },
-        { "src": "/address/all", "dest": "/api/address/all" },
-        { "src": "/order/all", "dest": "/api/order/all" }
+        {
+            "src": "/(.*)",
+            "dest": "/index.js"
+        }
     ]
 }
