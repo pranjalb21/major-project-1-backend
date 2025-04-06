@@ -18,11 +18,11 @@ router
                 });
             }
         } catch (error) {
-            console.log("hi");
+            console.log("Error:", error.message);
 
             res.status(500).json({
                 message: "Failed to fetch wishlist data.",
-                error,
+                error: error.message,
             });
         }
     })
