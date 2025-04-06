@@ -9,7 +9,7 @@ const wishlistRouter = require("./routes/wishlist.routes");
 const addressRouter = require("./routes/address.routes");
 const orderRouter = require("./routes/order.routes");
 
-const PORT = process.env.PORT||3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const corsOptions = {
     origin: "*",
@@ -24,6 +24,8 @@ app.use("/cart", cartRouter);
 app.use("/wishlist", wishlistRouter);
 app.use("/address", addressRouter);
 app.use("/order", orderRouter);
+
+app.get("/", (req, res) => res.status(200).json({ message: "Hi" }));
 
 app.listen(PORT, async () => {
     await initializeDB();
